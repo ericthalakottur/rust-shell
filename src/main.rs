@@ -6,12 +6,14 @@ fn main() {
     io::stdout().flush().unwrap();
 
     let mut input = String::new();
-    match stdin().read_line(&mut input) {
-        Ok(_) => {
-            println!("{}: command not found", input.trim());
-        }
-        Err(e) => {
-            eprintln!("{:?}", e);
-        }
-    };
+    loop {
+        match stdin().read_line(&mut input) {
+            Ok(_) => {
+                println!("{}: command not found", input.trim());
+            }
+            Err(e) => {
+                eprintln!("{:?}", e);
+            }
+        };
+    }
 }
