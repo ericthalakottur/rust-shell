@@ -12,7 +12,6 @@ fn main() {
                 if input.trim() == "exit" {
                     break;
                 }
-                println!("{}", (input == "exit"));
                 println!("{}: command not found", input.trim());
             }
             Err(e) => {
