@@ -12,7 +12,13 @@ fn main() {
                 if input.trim() == "exit" {
                     break;
                 }
-                println!("{}: command not found", input.trim());
+                let input_list: Vec<&str> = input.trim().split(" ").collect();
+                if input_list[0] == "echo" {
+                    let output = input_list[1..].join(" ");
+                    println!("{}", output);
+                } else {
+                    println!("{}: command not found", input.trim());
+                }
             }
             Err(e) => {
                 eprintln!("{:?}", e);
