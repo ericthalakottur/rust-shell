@@ -9,6 +9,10 @@ fn main() {
 
         match stdin().read_line(&mut input) {
             Ok(_) => {
+                if input.trim() == "exit" {
+                    break;
+                }
+                println!("{}", (input == "exit"));
                 println!("{}: command not found", input.trim());
             }
             Err(e) => {
