@@ -2,8 +2,8 @@
 use std::io::{self, Write, stdin};
 
 fn main() {
-    let mut input = String::new();
     loop {
+        let mut input = String::new();
         print!("$ ");
         io::stdout().flush().unwrap();
 
