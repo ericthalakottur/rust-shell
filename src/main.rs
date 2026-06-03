@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use std::io::{self, Write, stdin};
-use std::{fs, os::unix::fs::MetadataExt, path::Path};
+use std::{fs, os::unix::fs::MetadataExt, path::Path, process::Command};
 
 fn main() {
     let BUILTIN_COMMANDS: Vec<&str> = vec!["echo", "exit", "type"];
@@ -21,14 +21,21 @@ fn main() {
                 } else if input_list[0] == "type" {
                     if BUILTIN_COMMANDS.contains(&input_list[1]) {
                         println!("{} is a shell builtin", input_list[1]);
-                    } else if present_in_path(input_list[1]) != "" {
-                        println!("{} is {}", input_list[1], present_in_path(input_list[1]));
+                    } else if is_executable_file(input_list[1]) != "" {
+                        println!("{} is {}", input_list[1], is_executable_file(input_list[1]));
                     } else {
                         println!("{}: not found", input_list[1]);
                     }
+                } else if is_executable_file(&input_list[0]) != "" {
+                    let output = Command::new(input_list[0])
+                        .args(&input_list[1..])
+                        .output()
+                        .expect("failed to execute command");
+                    print!("{}", String::from_utf8_lossy(&output.stdout));
                 } else {
                     println!("{}: command not found", input.trim());
                 }
+                io::stdout().flush().unwrap();
             }
             Err(e) => {
                 eprintln!("{:?}", e);
@@ -37,7 +44,7 @@ fn main() {
     }
 }
 
-fn present_in_path(command: &str) -> String {
+fn is_executable_file(command: &str) -> String {
     let paths = std::env::var("PATH").unwrap();
     for path in paths.split(":") {
         let current_path = Path::new(path).join(command);
