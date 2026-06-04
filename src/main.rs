@@ -91,8 +91,10 @@ fn main() {
                         println!("{}", env::current_dir().unwrap().display());
                     }
                     ShellCommand::Cd(path) => {
-                        env::set_current_dir(Path::new(&path)).unwrap_or_else(|_| {
-                            println!("cd: {}: No such file or directory", path)
+                        let path = path.replace("~", std::env::var("HOME").unwrap().as_str());
+                        let path = Path::new(&path);
+                        env::set_current_dir(path).unwrap_or_else(|_| {
+                            println!("cd: {}: No such file or directory", path.display())
                         });
                     }
                     ShellCommand::ExternalCommand(cmd, args) => {
