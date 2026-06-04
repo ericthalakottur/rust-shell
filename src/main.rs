@@ -18,7 +18,7 @@ enum ShellCommand {
 }
 
 fn parse_input(input: &str) -> ShellCommand {
-    let builtin_commands: Vec<&str> = vec!["echo", "exit", "type"];
+    let builtin_commands: Vec<&str> = vec!["echo", "exit", "type", "pwd"];
     if input.trim() == "exit" {
         return ShellCommand::Exit;
     }
