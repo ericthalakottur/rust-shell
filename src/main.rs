@@ -13,12 +13,13 @@ enum ShellCommand {
     Echo(String),
     Type(CommandType, String),
     Pwd,
+    Cd(String),
     ExternalCommand(String, Vec<String>),
     InvalidCommand(String),
 }
 
 fn parse_input(input: &str) -> ShellCommand {
-    let builtin_commands: Vec<&str> = vec!["echo", "exit", "type", "pwd"];
+    let builtin_commands: Vec<&str> = vec!["echo", "exit", "type", "pwd", "cd"];
     if input.trim() == "exit" {
         return ShellCommand::Exit;
     }
@@ -36,6 +37,8 @@ fn parse_input(input: &str) -> ShellCommand {
         return ShellCommand::Type(command_type, input_list[1].to_string());
     } else if input_list[0] == "pwd" {
         return ShellCommand::Pwd;
+    } else if input_list[0] == "cd" {
+        return ShellCommand::Cd(input_list[1].to_string());
     } else if is_executable_file(&input_list[0]) != "" {
         return ShellCommand::ExternalCommand(
             input_list[0].to_string(),
@@ -86,6 +89,13 @@ fn main() {
                     },
                     ShellCommand::Pwd => {
                         println!("{}", env::current_dir().unwrap().display());
+                    }
+                    ShellCommand::Cd(path) => {
+                        if Path::new(&path).is_dir() {
+                            let _ = env::set_current_dir(Path::new(&path));
+                        } else {
+                            println!("cd: {}: No such file or directory", path);
+                        }
                     }
                     ShellCommand::ExternalCommand(cmd, args) => {
                         let output = Command::new(cmd)
