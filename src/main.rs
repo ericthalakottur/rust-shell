@@ -91,11 +91,9 @@ fn main() {
                         println!("{}", env::current_dir().unwrap().display());
                     }
                     ShellCommand::Cd(path) => {
-                        if Path::new(&path).is_dir() {
-                            let _ = env::set_current_dir(Path::new(&path));
-                        } else {
-                            println!("cd: {}: No such file or directory", path);
-                        }
+                        env::set_current_dir(Path::new(&path)).unwrap_or_else(|_| {
+                            println!("cd: {}: No such file or directory", path)
+                        });
                     }
                     ShellCommand::ExternalCommand(cmd, args) => {
                         let output = Command::new(cmd)
