@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use std::io::{self, Write, stdin};
-use std::{fs, os::unix::fs::MetadataExt, path::Path, process::Command};
+use std::{env, fs, os::unix::fs::MetadataExt, path::Path, process::Command};
 
 enum CommandType {
     Builtin,
@@ -12,6 +12,7 @@ enum ShellCommand {
     Exit,
     Echo(String),
     Type(CommandType, String),
+    Pwd,
     ExternalCommand(String, Vec<String>),
     InvalidCommand(String),
 }
@@ -33,6 +34,8 @@ fn parse_input(input: &str) -> ShellCommand {
             CommandType::NotExecutable
         };
         return ShellCommand::Type(command_type, input_list[1].to_string());
+    } else if input_list[0] == "pwd" {
+        return ShellCommand::Pwd;
     } else if is_executable_file(&input_list[0]) != "" {
         return ShellCommand::ExternalCommand(
             input_list[0].to_string(),
@@ -81,6 +84,9 @@ fn main() {
                             println!("{}: not found", cmd);
                         }
                     },
+                    ShellCommand::Pwd => {
+                        println!("{}", env::current_dir().unwrap().display());
+                    }
                     ShellCommand::ExternalCommand(cmd, args) => {
                         let output = Command::new(cmd)
                             .args(args)
