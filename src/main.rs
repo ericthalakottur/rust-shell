@@ -18,7 +18,7 @@ enum ShellCommand {
     InvalidCommand(String),
 }
 
-const DELIMITERS: [char; 2] = [' ', '\''];
+const DELIMITERS: [char; 1] = ['\''];
 
 fn parse_string(input: &str) -> Vec<String> {
     let input: Vec<char> = input.chars().collect();
