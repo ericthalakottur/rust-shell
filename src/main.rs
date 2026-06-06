@@ -37,7 +37,7 @@ fn parse_string(input: &str) -> Vec<String> {
             let mut s =
                 if j > 1 && input[j - 1] == input[j - 2] && DELIMITERS.contains(&input[i - 1]) {
                     parsed_string.pop().unwrap_or_default()
-                } else if j > 1 && input[j - 2] != ' ' {
+                } else if j > 1 && input[j - 2] != ' ' && parsed_string.len() > 1 {
                     parsed_string.pop().unwrap_or_default()
                 } else {
                     String::new()
@@ -56,6 +56,7 @@ fn parse_string(input: &str) -> Vec<String> {
         }
         i += 1;
     }
+    println!("{:?}", parsed_string);
     parsed_string
 }
 
