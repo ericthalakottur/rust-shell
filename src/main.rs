@@ -18,6 +18,8 @@ enum ShellCommand {
     InvalidCommand(String),
 }
 
+const DELIMITERS: [char; 2] = [' ', '\''];
+
 fn parse_string(input: &str) -> Vec<String> {
     let input: Vec<char> = input.chars().collect();
     let mut parsed_string = vec![];
@@ -31,12 +33,18 @@ fn parse_string(input: &str) -> Vec<String> {
             } else {
                 ' '
             };
-            let mut s = String::new();
-            while j < input.len() && input[j] != delimiter {
+            let mut s = if j > 1 && input[j - 1] == '\'' && input[j - 2] == '\'' {
+                parsed_string.pop().unwrap_or_default()
+            } else {
+                String::new()
+            };
+            while j < input.len() && input[j] != delimiter && !DELIMITERS.contains(&input[j]) {
                 s.push(input[j]);
                 j += 1;
             }
-            parsed_string.push(s);
+            if s.len() > 0 {
+                parsed_string.push(s)
+            }
             i = j;
         }
         i += 1;
