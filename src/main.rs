@@ -18,7 +18,7 @@ enum ShellCommand {
     InvalidCommand(String),
 }
 
-const DELIMITERS: [char; 1] = ['\''];
+const DELIMITERS: [char; 2] = ['\'', '"'];
 
 fn parse_string(input: &str) -> Vec<String> {
     let input: Vec<char> = input.chars().collect();
@@ -27,18 +27,25 @@ fn parse_string(input: &str) -> Vec<String> {
     while i < input.len() {
         if input[i] != ' ' {
             let mut j = i;
-            let delimiter: char = if input[i] == '\'' {
+            let escape_characters: bool = DELIMITERS.contains(&input[i]);
+            let delimiter: char = if DELIMITERS.contains(&input[i]) {
                 j += 1;
-                '\''
+                input[i]
             } else {
                 ' '
             };
-            let mut s = if j > 1 && input[j - 1] == '\'' && input[j - 2] == '\'' {
-                parsed_string.pop().unwrap_or_default()
-            } else {
-                String::new()
-            };
-            while j < input.len() && input[j] != delimiter && !DELIMITERS.contains(&input[j]) {
+            let mut s =
+                if j > 1 && input[j - 1] == input[j - 2] && DELIMITERS.contains(&input[i - 1]) {
+                    parsed_string.pop().unwrap_or_default()
+                } else if j > 1 && input[j - 2] != ' ' {
+                    parsed_string.pop().unwrap_or_default()
+                } else {
+                    String::new()
+                };
+            while j < input.len()
+                && input[j] != delimiter
+                && (escape_characters || !DELIMITERS.contains(&input[j]))
+            {
                 s.push(input[j]);
                 j += 1;
             }
