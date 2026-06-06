@@ -18,26 +18,52 @@ enum ShellCommand {
     InvalidCommand(String),
 }
 
+fn parse_string(input: &str) -> Vec<String> {
+    let input: Vec<char> = input.chars().collect();
+    let mut parsed_string = vec![];
+    let mut i = 0;
+    while i < input.len() {
+        if input[i] != ' ' {
+            let mut j = i;
+            let delimiter: char = if input[i] == '\'' {
+                j += 1;
+                '\''
+            } else {
+                ' '
+            };
+            let mut s = String::new();
+            while j < input.len() && input[j] != delimiter {
+                s.push(input[j]);
+                j += 1;
+            }
+            parsed_string.push(s);
+            i = j;
+        }
+        i += 1;
+    }
+    parsed_string
+}
+
 fn parse_input(input: &str) -> ShellCommand {
-    let builtin_commands: Vec<&str> = vec!["echo", "exit", "type", "pwd", "cd"];
-    if input.trim() == "exit" {
+    let builtin_commands: Vec<&str> = vec!["exit", "echo", "type", "pwd", "cd"];
+    if input.trim() == builtin_commands[0] {
         return ShellCommand::Exit;
     }
-    let input_list: Vec<&str> = input.trim().split(" ").collect();
-    if input_list[0] == "echo" {
+    let input_list: Vec<String> = parse_string(input.trim());
+    if input_list[0] == builtin_commands[1] {
         return ShellCommand::Echo(input_list[1..].join(" ").to_string());
-    } else if input_list[0] == "type" {
-        let command_type: CommandType = if builtin_commands.contains(&input_list[1]) {
+    } else if input_list[0] == builtin_commands[2] {
+        let command_type: CommandType = if builtin_commands.contains(&input_list[1].as_str()) {
             CommandType::Builtin
-        } else if is_executable_file(input_list[1]) != "" {
+        } else if is_executable_file(input_list[1].as_str()) != "" {
             CommandType::Executable
         } else {
             CommandType::NotExecutable
         };
         return ShellCommand::Type(command_type, input_list[1].to_string());
-    } else if input_list[0] == "pwd" {
+    } else if input_list[0] == builtin_commands[3] {
         return ShellCommand::Pwd;
-    } else if input_list[0] == "cd" {
+    } else if input_list[0] == builtin_commands[4] {
         return ShellCommand::Cd(input_list[1].to_string());
     } else if is_executable_file(&input_list[0]) != "" {
         return ShellCommand::ExternalCommand(
