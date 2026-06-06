@@ -56,7 +56,6 @@ fn parse_string(input: &str) -> Vec<String> {
         }
         i += 1;
     }
-    println!("{:?}", parsed_string);
     parsed_string
 }
 
